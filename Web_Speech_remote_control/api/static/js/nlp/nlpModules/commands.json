@@ -1,0 +1,11 @@
+{
+    "forward": "forward_",
+    "left": "left_",
+    "right": "right_",
+    "backward": "backward_",
+    "start": "start_",
+    "stop": "stop_",
+    "up": "up_",
+    "down": "down_",
+    "test": "timeout 7s ros2 run rover_control test_node"
+}

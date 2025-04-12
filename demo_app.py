@@ -7,7 +7,7 @@ import random
 import time
 
 st.set_page_config(layout="wide")
-st.title("Hazard Risk Map in Subcarpathian")
+st.title("Hazard Risk Map in Subcarpathian Voivoidership")
 
 # Region bounding box
 lat_min, lat_max = 49.0, 50.5
@@ -36,7 +36,7 @@ def generate_random_points(n):
         lon = random.uniform(lon_min, lon_max)
         risk = round(random.uniform(1, 100), 1)
         radius = random.uniform(4, 15)
-        wind_angle = random.uniform(0, 360)  # 🧭 add wind direction
+        wind_angle = random.uniform(0, 360)
         points.append({
             "lat": lat,
             "lon": lon,
@@ -48,7 +48,7 @@ def generate_random_points(n):
 
 # Initialize session state
 if "random_points" not in st.session_state or st.session_state.random_points is None:
-    st.session_state.random_points = generate_random_points(random.randint(10, 50))
+    st.session_state.random_points = generate_random_points(random.randint(5, 30))
 if "display_index" not in st.session_state:
     st.session_state.display_index = 0
 
@@ -76,36 +76,46 @@ for i, point in enumerate(st.session_state["random_points"]):
                     opacity: 0;
                     transform: translate(-50%, -50%);
                     text-align: center;
-                    line-height: 1.1;
+                    font-family: sans-serif;
+                    line-height: 1.2;
                 ">
-                    <!-- Wiggle Wind Arrow -->
-                    <div class="wind-arrow" style="
-                        display: inline-block;
-                        transform: rotate({point['wind_angle']}deg);
-                        font-size: 14px;
-                        margin-bottom: 2px;
-                        transform-origin: center;
-                        animation: wiggle 1.5s infinite ease-in-out;
-                    ">➤</div>
 
-                    <!-- Circle -->
+                    <!-- Wind Arrow Container -->
+                    <div style="
+                        transform: rotate({point['wind_angle']}deg);
+                        transform-origin: center;
+                        margin-bottom: 2px;
+                    ">
+                        <div style="
+                            display: inline-block;
+                            font-size: 16px;
+                            animation: wiggle 1.5s infinite ease-in-out;
+                            transform-origin: center;
+                        ">↑</div>
+                    </div>
+
+                    <!-- Circle Background -->
                     <div style="
                         width: {point['radius'] * 2}px;
                         height: {point['radius'] * 2}px;
-                        border-radius: 50%;
                         background-color: {get_color(point['risk'])};
+                        border-radius: 50%;
                         opacity: 0.6;
                         margin: 0 auto;
                         box-shadow: 0 0 8px rgba(0,0,0,0.3);
+                        z-index: 0;
                     "></div>
 
-                    <!-- Emoji + Label -->
+                    <!-- Emoji + Percentage Label -->
                     <div style="
-                        font-size:{2 + point['radius']}px;
+                        font-size: {2 + point['radius']}px;
                         font-weight: bold;
                         text-shadow: 1px 1px 2px white;
                         margin-top: -4px;
-                    ">🔥<br>{point['risk']}%</div>
+                        z-index: 2;
+                    ">
+                        🔥 {point['risk']}%
+                    </div>
                 </div>
 
                 <style>
@@ -145,7 +155,6 @@ m.get_root().html.add_child(folium.Element(legend_html))
 # Display map
 st_folium(m, width=1000, height=650, key="animated_map")
 
-# 🚀 Animate: increment display index and rerun
 if st.session_state.display_index + 1 < len(st.session_state.random_points):
     time.sleep(0.2)  # wait before showing the next point
     st.session_state.display_index += 1

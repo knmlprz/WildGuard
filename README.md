@@ -1,5 +1,7 @@
 # WildGuard
 
+https://drive.google.com/file/d/14xCSmmEckv3Q9GSMLAVZdhJ-lZbZOWpn/view?usp=drivesdk
+
 --[PL]--
 
 Wild Guard to system analizujący dane z dronów patrolujących lasy (termalne, wizualne i stosunek tlenu do CO2 ) i dane satelitarne (pogoda). Następnie są one przertwarzane przez model AI (trenowany na danych pogodowych sprzed i po pożarach). Celem systemu jest ocena zagrożenia pożarowego oraz prognozowanie kierunku rozprzestrzeniania się ognia.

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import streamlit as st
 import torch
 from PIL import Image
@@ -8,31 +10,31 @@ import time
 import requests
 from folium import Marker, Popup
 
-# Konfiguracja
+# Page configuration
 st.set_page_config(layout="wide")
-st.title("🔥 Fire Hazard System")
+st.title("🔥 Fire Hazard Monitoring System")
 
-# Zakładki aplikacji
-tabs = st.tabs(["🧠 Wykrywanie pożaru na obrazie", "🗺️ Mapa ryzyka pożarowego"])
+# Application tabs
+tabs = st.tabs(["🧠 AI Smoke Detection", "🗺️ Fire Hazard Map Dashboard"])
 
-# ========== ZAKŁADKA 1: Detekcja obrazu ==========
+# ========== TAB 1: Image Detection ==========
 with tabs[0]:
-    st.header("Wykrywanie pożaru/dymu z YOLOv5")
-    uploaded_file = st.file_uploader("Wgraj obraz do analizy", type=['jpg', 'jpeg', 'png'])
+    st.header("YOLOv5 Smoke/Wildfire Detection from Drone Imagery")
+    uploaded_file = st.file_uploader("Upload an image for analysis", type=['jpg', 'jpeg', 'png'])
 
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
-        st.image(img, caption="Wgrany obraz", use_column_width=True)
+        st.image(img, caption="Uploaded Image", use_column_width=True)
 
-        with st.spinner("Wykrywanie..."):
+        with st.spinner("Detecting..."):
             model = torch.hub.load('yolov5', 'custom', path='best.pt', source='local')
             results = model(img)
             results.render()
-            st.image(results.ims[0], caption="Wyniki detekcji", use_column_width=True)
+            st.image(results.ims[0], caption="Detection Results", use_column_width=True)
 
-# ========== ZAKŁADKA 2: Mapa ==========
+# ========== TAB 2: Map Dashboard ==========
 with tabs[1]:
-    st.header("Hazard Risk Map in Subcarpathian Voivodeship")
+    st.header("Fire Hazard Risk Map – Subcarpathian Voivodeship")
 
     lat_min, lat_max = 49.0, 50.5
     lon_min, lon_max = 21.0, 23.5
@@ -63,7 +65,7 @@ with tabs[1]:
         } for _ in range(n)]
 
     if "random_points" not in st.session_state or st.session_state.random_points is None:
-        st.session_state.random_points = generate_random_points(random.randint(5, 30))
+        st.session_state.random_points = generate_random_points(random.randint(10, 30))
     if "display_index" not in st.session_state:
         st.session_state.display_index = 0
 
@@ -100,7 +102,7 @@ with tabs[1]:
         ).add_to(m)
 
     for coords, address in st.session_state.clicked_markers:
-        Marker(location=coords, popup=Popup(address), tooltip="Kliknięte miejsce").add_to(m)
+        Marker(location=coords, popup=Popup(address), tooltip="Clicked Location").add_to(m)
 
     legend_html = """
     <div style='position: fixed; bottom: 50px; left: 50px; width: 170px; height: 120px; background-color: white; z-index:9999; border:2px solid grey; padding: 10px; font-size: 14px;'>
@@ -121,11 +123,11 @@ with tabs[1]:
 
         url = f"https://nominatim.openstreetmap.org/reverse?lat={clicked_lat}&lon={clicked_lng}&format=json"
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
-        address = response.json().get("display_name", "Brak danych") if response.status_code == 200 else "Błąd pobierania adresu"
+        address = response.json().get("display_name", "No data available") if response.status_code == 200 else "Error retrieving address"
 
         st.session_state.clicked_markers.append((coords, address))
-        st.write(f"Ostatnio kliknięte współrzędne: {clicked_lat}, {clicked_lng}")
-        st.write(f"Adres: {address}")
+        st.write(f"Last clicked coordinates: {clicked_lat}, {clicked_lng}")
+        st.write(f"Address: {address}")
 
     if st.session_state.display_index + 1 < len(st.session_state.random_points):
         time.sleep(0.2)

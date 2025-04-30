@@ -49,7 +49,7 @@
   "author": "Rafał [Bafau] Bazan <rafalbe777@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^19.1.9",
+    "electron": "^22.3.25",
     "electron-builder": "^25.0.5"
   },
   "dependencies": {
